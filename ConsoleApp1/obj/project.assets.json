@@ -13,21 +13,19 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ruihe\\FirstC#Application\\ConsoleApp1\\ConsoleApp1.csproj",
+      "projectUniqueName": "C:\\Users\\ruihe\\Bio project\\C-APBioFinalProjectCellularAutomata\\ConsoleApp1\\ConsoleApp1.csproj",
       "projectName": "ConsoleApp1",
-      "projectPath": "C:\\Users\\ruihe\\FirstC#Application\\ConsoleApp1\\ConsoleApp1.csproj",
+      "projectPath": "C:\\Users\\ruihe\\Bio project\\C-APBioFinalProjectCellularAutomata\\ConsoleApp1\\ConsoleApp1.csproj",
       "packagesPath": "C:\\Users\\ruihe\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ruihe\\FirstC#Application\\ConsoleApp1\\obj\\",
+      "outputPath": "C:\\Users\\ruihe\\Bio project\\C-APBioFinalProjectCellularAutomata\\ConsoleApp1\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\ruihe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\ruihe\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0-windows"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {

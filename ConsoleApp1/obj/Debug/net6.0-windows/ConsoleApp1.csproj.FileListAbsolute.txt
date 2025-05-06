@@ -12,3 +12,18 @@ C:\Users\ruihe\FirstC#Application\ConsoleApp1\obj\Debug\net6.0-windows\refint\Co
 C:\Users\ruihe\FirstC#Application\ConsoleApp1\obj\Debug\net6.0-windows\ConsoleApp1.pdb
 C:\Users\ruihe\FirstC#Application\ConsoleApp1\obj\Debug\net6.0-windows\ConsoleApp1.genruntimeconfig.cache
 C:\Users\ruihe\FirstC#Application\ConsoleApp1\obj\Debug\net6.0-windows\ref\ConsoleApp1.dll
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\bin\Debug\net6.0-windows\ConsoleApp1.exe
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\bin\Debug\net6.0-windows\ConsoleApp1.deps.json
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\bin\Debug\net6.0-windows\ConsoleApp1.runtimeconfig.json
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\bin\Debug\net6.0-windows\ConsoleApp1.dll
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\bin\Debug\net6.0-windows\ConsoleApp1.pdb
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\obj\Debug\net6.0-windows\ConsoleApp1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\obj\Debug\net6.0-windows\ConsoleApp1.AssemblyInfoInputs.cache
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\obj\Debug\net6.0-windows\ConsoleApp1.AssemblyInfo.cs
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\obj\Debug\net6.0-windows\ConsoleApp1.csproj.CoreCompileInputs.cache
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\obj\Debug\net6.0-windows\ConsoleApp1.sourcelink.json
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\obj\Debug\net6.0-windows\ConsoleApp1.dll
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\obj\Debug\net6.0-windows\refint\ConsoleApp1.dll
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\obj\Debug\net6.0-windows\ConsoleApp1.pdb
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\obj\Debug\net6.0-windows\ConsoleApp1.genruntimeconfig.cache
+C:\Users\ruihe\Bio project\C-APBioFinalProjectCellularAutomata\ConsoleApp1\obj\Debug\net6.0-windows\ref\ConsoleApp1.dll
