@@ -36,13 +36,10 @@ public class EcoSysField
                 float tempLightVal = 128f - Math.Abs(Noise.CalcPixel3D(x, y, time, 0.005f) - 128);
                 fieldLight[x, y] = tempLightVal;
                 //Console.WriteLine(tempLightVal + " , " + (tempLightVal >= 128f));
+                SimMain.lightbmp.SetPixel(x, y, Color.FromArgb(255, (int)(256f * tempLightVal / 128f), (int)(256f * tempLightVal / 128f), (int)(256f * tempLightVal / 128f)));
                 if (tempLightVal >= 100f)
                 {
-                    SimMain.lightbmp.SetPixel(x, y, Color.FromArgb(1, (int)(256f * tempLightVal / 128f), (int)(256f * tempLightVal / 128f), (int)(256f * tempLightVal / 128f)));
-                }
-                else
-                {
-                    SimMain.lightbmp.SetPixel(x, y, Color.FromArgb(1, (int)(256f * tempLightVal / 128f), (int)(256f * tempLightVal / 128f), (int)(256f * tempLightVal / 128f)));
+                    SimMain.lightbmp.SetPixel(x, y, Color.White);
                 }
 
             }
