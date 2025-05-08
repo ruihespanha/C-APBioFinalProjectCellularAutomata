@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using System.Timers;
 using System.Threading;
 using System.Drawing.Text;
+using System.Diagnostics;
+using SimplexNoise;
 
 class SimMain : Form
 {
@@ -23,6 +25,7 @@ class SimMain : Form
     int mapHeight;
     int mapWidth;
     public static Bitmap bmp = new Bitmap(1000, 1000);
+    public static Bitmap lightbmp = new Bitmap(1000, 1000);
 
     static System.Windows.Forms.Timer myTimer = new System.Windows.Forms.Timer();
     public SimMain()
@@ -33,8 +36,10 @@ class SimMain : Form
     }
     public async void Init()
     {
+
         mapWidth = 1000;
         mapHeight = 1000;
+
 
         this.Width = 1017;
         this.Height = 1040;
@@ -42,7 +47,7 @@ class SimMain : Form
         this.Show();
         graphics = this.CreateGraphics();
         instance.graphics.FillRectangle(Brushes.Black, 0, 0, 1000, 1000);
-        SetPeriodic(10);
+        SetPeriodic(1000);
 
         field = new EcoSysField(mapWidth, mapHeight);
     }
@@ -51,6 +56,7 @@ class SimMain : Form
     {
         // Create a timer with a two second interval.
         periodicTimer = new System.Timers.Timer(speed);
+
         // Hook up the Elapsed event for the timer. 
         periodicTimer.Elapsed += OnTimedEvent;
         periodicTimer.AutoReset = true;
@@ -75,22 +81,29 @@ class SimMain : Form
     }
     private static void OnTimedEvent(Object source, ElapsedEventArgs e)
     {
-        Periodic();
+        VisualizeLight();
+        //Periodic();
         //Console.WriteLine("The Elapsed event was raised at {0:HH:mm:ss.fff}", e.SignalTime);
     }
     public void Display(EcoSysField field)
     {
-        // for (int x = 0; x < field.GetField().GetLength(0); x++)
-        // {
-        //     for (int y = 0; y < field.GetField().GetLength(1); y++)
-        //     {
-        //         if (field.GetField()[x, y] != null && field.GetField()[x, y].type == Life.SpeciesType.PLANT)
-        //             bmp.SetPixel(x, y, Color.Green);
-        //         else
-        //             bmp.SetPixel(x, y, Color.Black);
-        //     }
-        // }
         graphics.DrawImage(bmp, 0, 0);
+    }
+    public static void VisualizeLight()
+    {
+        if (!instance.WaitPeriod)
+        {
+
+            instance.WaitPeriod = true;
+            instance.time++;
+
+            instance.field.StepLight(instance.time);
+            Console.WriteLine(instance.time);
+
+            instance.graphics.DrawImage(lightbmp, 0, 0);
+            instance.field.Step();
+            instance.WaitPeriod = false;
+        }
     }
 
 }

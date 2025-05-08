@@ -1,10 +1,12 @@
+using System.CodeDom.Compiler;
 using System.Diagnostics.Eventing.Reader;
-
+using System.Runtime.Serialization;
+using SimplexNoise;
 public class EcoSysField
 {
     private static Random rand = new Random();
     private Life[,] field;
-    private double[,] fieldLight;
+    private double[,] fieldLight = new double[1000, 1000];
     public EcoSysField(int width, int height)
     {
         field = new Life[width, height];
@@ -21,57 +23,30 @@ public class EcoSysField
 
     public void Step()
     {
-        SimMain.bmp = new Bitmap(1000, 1000);
-        Life[,] tempField = new Life[field.GetLength(0), field.GetLength(1)];
-        for (int x = 0; x < field.GetLength(0); x++)
-            for (int y = 0; y < field.GetLength(1); y++)
+
+
+    }
+
+    public void StepLight(int time)
+    {
+        for (int x = 0; x < fieldLight.GetLength(0); x++)
+        {
+            for (int y = 0; y < fieldLight.GetLength(1); y++)
             {
+                float tempLightVal = 128f - Math.Abs(Noise.CalcPixel3D(x, y, time, 0.005f) - 128);
+                fieldLight[x, y] = tempLightVal;
+                //Console.WriteLine(tempLightVal + " , " + (tempLightVal >= 128f));
+                if (tempLightVal >= 100f)
+                {
+                    SimMain.lightbmp.SetPixel(x, y, Color.FromArgb(1, (int)(256f * tempLightVal / 128f), (int)(256f * tempLightVal / 128f), (int)(256f * tempLightVal / 128f)));
+                }
+                else
+                {
+                    SimMain.lightbmp.SetPixel(x, y, Color.FromArgb(1, (int)(256f * tempLightVal / 128f), (int)(256f * tempLightVal / 128f), (int)(256f * tempLightVal / 128f)));
+                }
 
-                int temp = 0;
-                for (int i = 0; i < 3; i++)
-                    for (int j = 0; j < 3; j++)
-                    {
-                        if (
-                            (x - 1 + i) >= 0
-                            && ((y - 1 + j) >= 0)
-                            && ((x - 1 + i) < field.GetLength(0))
-                            && ((y - 1 + j) < field.GetLength(1))
-                            )
-                        {
-                            if (field[x - 1 + i, y - 1 + j] != null)
-                                if (field[x - 1 + i, y - 1 + j].type == Life.SpeciesType.PLANT)
-                                    temp++;
-
-                        }
-                    }
-                if (temp == 3)
-                {
-                    tempField[x, y] = new Life(Life.SpeciesType.PLANT);
-                    if (field[x, y] == null)
-                    {
-                        SimMain.bmp.SetPixel(x, y, Color.Green);
-                    }
-                    else if (field[x, y].type != Life.SpeciesType.PLANT)
-                    {
-                        SimMain.bmp.SetPixel(x, y, Color.Green);
-                    }
-                }
-                else if (temp == 4 && field[x, y] != null)
-                {
-                    if (field[x, y].type == Life.SpeciesType.PLANT)
-                    {
-                        tempField[x, y] = new Life(Life.SpeciesType.PLANT);
-                    }
-                }
-                else if (field[x, y] != null)
-                {
-                    if (field[x, y].type == Life.SpeciesType.PLANT)
-                    {
-                        SimMain.bmp.SetPixel(x, y, Color.Black);
-                    }
-                }
             }
-        field = tempField;
+        }
 
     }
 
