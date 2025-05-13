@@ -22,8 +22,8 @@ class SimMain : Form
     public static SimMain instance;
     private static System.Timers.Timer periodicTimer;
     private EcoSysField field;
-    int mapHeight;
-    int mapWidth;
+    public static int mapHeight = 500;
+    public static int mapWidth = 100;
     public static Bitmap bmp = new Bitmap(1000, 1000);
     public static Bitmap lightbmp = new Bitmap(1000, 1000);
 
@@ -37,17 +37,14 @@ class SimMain : Form
     public async void Init()
     {
 
-        mapWidth = 1000;
-        mapHeight = 1000;
-
 
         this.Width = 1017;
         this.Height = 1040;
         this.Text = "Sim";
         this.Show();
         graphics = this.CreateGraphics();
-        instance.graphics.FillRectangle(Brushes.Black, 0, 0, 1000, 1000);
-        SetPeriodic(1000);
+        instance.graphics.FillRectangle(Brushes.Black, 0, 0, mapWidth, mapHeight);
+        SetPeriodic(50);
 
         field = new EcoSysField(mapWidth, mapHeight);
     }
@@ -74,7 +71,7 @@ class SimMain : Form
             instance.WaitPeriod = true;
             instance.time++;
             instance.Display(instance.field);
-            instance.field.Step();
+            instance.field.StepTime(instance.time);
             instance.WaitPeriod = false;
         }
 
@@ -97,11 +94,11 @@ class SimMain : Form
             instance.WaitPeriod = true;
             instance.time++;
 
-            instance.field.StepLight(instance.time);
+            //instance.field.StepLight(instance.time);
             Console.WriteLine(instance.time);
 
             instance.graphics.DrawImage(lightbmp, 0, 0);
-            instance.field.Step();
+            instance.field.StepTime(instance.time);
             instance.WaitPeriod = false;
         }
     }

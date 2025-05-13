@@ -23,4 +23,8 @@ public class Life
             return 1;
 
     }
+    public bool canMateWith()
+    {
+        return true;
+    }
 }
