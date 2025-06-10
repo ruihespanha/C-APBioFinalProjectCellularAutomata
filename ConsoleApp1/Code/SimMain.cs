@@ -22,8 +22,8 @@ class SimMain : Form
     public static SimMain instance;
     private static System.Timers.Timer periodicTimer;
     private EcoSysField field;
-    public static int mapHeight = 500;
-    public static int mapWidth = 100;
+    public static int mapHeight = 50;
+    public static int mapWidth = 50;
     public static Bitmap bmp = new Bitmap(1000, 1000);
     public static Bitmap lightbmp = new Bitmap(1000, 1000);
 
@@ -44,7 +44,7 @@ class SimMain : Form
         this.Show();
         graphics = this.CreateGraphics();
         instance.graphics.FillRectangle(Brushes.Black, 0, 0, mapWidth, mapHeight);
-        SetPeriodic(50);
+        SetPeriodic(10);
 
         field = new EcoSysField(mapWidth, mapHeight);
     }
@@ -66,14 +66,14 @@ class SimMain : Form
     }
     private static void Periodic()
     {
-        if (!instance.WaitPeriod)
-        {
-            instance.WaitPeriod = true;
-            instance.time++;
-            instance.Display(instance.field);
-            instance.field.StepTime(instance.time);
-            instance.WaitPeriod = false;
-        }
+        // if (!instance.WaitPeriod)
+        // {
+        //     instance.WaitPeriod = true;
+        //     instance.time++;
+        //     instance.Display(instance.field);
+        //     instance.field.StepTime(instance.time);
+        //     instance.WaitPeriod = false;
+        // }
 
     }
     private static void OnTimedEvent(Object source, ElapsedEventArgs e)
@@ -90,15 +90,16 @@ class SimMain : Form
     {
         if (!instance.WaitPeriod)
         {
-
+            Console.WriteLine(instance.time);
             instance.WaitPeriod = true;
             instance.time++;
 
-            //instance.field.StepLight(instance.time);
-            Console.WriteLine(instance.time);
-
-            instance.graphics.DrawImage(lightbmp, 0, 0);
+            instance.Display(instance.field);
+            // instance.field.StepLight(instance.time);
             instance.field.StepTime(instance.time);
+            instance.Display(instance.field);
+            instance.graphics.DrawImage(lightbmp, 0, 0);
+
             instance.WaitPeriod = false;
         }
     }

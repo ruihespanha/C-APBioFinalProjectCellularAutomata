@@ -1,18 +1,50 @@
 public class Life
 {
+    private static Random rand = new Random();
+
     public enum SpeciesType { PLANT, BACTERIA }
     public SpeciesType type;
-    public int speed;
-    public double range;
-    public double replicationFactor;
+    public int speed = 1;
+    public double range = 1;
+    public double replicationFactor = 1;
+    public double photosyntheticRate = 1;
     public enum energySource { FULLCHEM, MOSTCHEM, EITHER, MOSTPHOTO, FULLPHOTO }
     public double energy;
     public Life(SpeciesType type)
     {
         this.type = type;
-        energy = 1;
+        this.energy = rand.NextDouble() * 5f;
+        this.speed = rand.Next(1, 10);
+        this.range = rand.NextDouble() * 4;
+        this.replicationFactor = rand.NextDouble() * 4 + 1;
+        this.photosyntheticRate = rand.NextDouble() * 4;
+    }
+    public Life(SpeciesType type, int speed, double range, double replicationFactor, double energy, double photosyntheticRate)
+    {
+        this.type = type;
+        this.energy = energy;
+        this.speed = speed;
+        this.range = range;
+        this.replicationFactor = replicationFactor;
+        this.photosyntheticRate = photosyntheticRate;
     }
 
+    public double getReplicationEnergy()
+    {
+        return 0.4f * replicationFactor * energy + 0.4f * speed + 0.3f * range + 4 * photosyntheticRate * photosyntheticRate;
+    }
+    public double useReplicationEnergy()
+    {
+        double tempReplicationEnergy = 0.4f * replicationFactor * energy + 0.4f * speed + 0.3f * range;
+        this.energy -= tempReplicationEnergy;
+        if (energy < 0)
+        {
+            energy = 0;
+            return tempReplicationEnergy;
+        }
+
+        return tempReplicationEnergy;
+    }
     public double GetEnergyConsumptionRate()
     {
         if (type == SpeciesType.PLANT)
@@ -23,8 +55,27 @@ public class Life
             return 1;
 
     }
-    public bool canMateWith()
+    public bool canMateWith(Life mate)
     {
-        return true;
+        bool canMate = (Math.Abs(mate.speed - this.speed) <= 1f) && (Math.Abs(mate.range - this.range) <= 0.3f) && (Math.Abs(mate.replicationFactor - this.replicationFactor) <= 0.5);
+        return canMate;
     }
+    public void photosynthisize(double light)
+    {
+        energy += light * photosyntheticRate / 10;
+        if (energy > 20)
+        {
+            energy = 20;
+        }
+    }
+
+    public Color GetColor()
+    {
+        return Color.FromArgb(255, speed * 10, 255, 255);
+    }
+    // public Life mate()
+    // {
+    //     speedMutation = (rand.Next(-15, 15)/15);
+    //     return new Life(this.type, this.speed + , double range, double replicationFactor, double energy)
+    // }
 }
