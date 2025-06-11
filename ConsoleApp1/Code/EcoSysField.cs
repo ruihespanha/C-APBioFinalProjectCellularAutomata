@@ -47,7 +47,8 @@ public class EcoSysField
         Life[,] tempLife = new Life[(SimMain.mapWidth), (SimMain.mapHeight)];
         Life templateOrganisum = new Life(Life.SpeciesType.PLANT);
 
-        int totalCount = 0;
+        double totalCount = 0;
+        double partialCount = 0;
         int[,] binLife = new int[(SimMain.mapWidth), (SimMain.mapHeight)];
         int[,] speedLife = new int[(SimMain.mapWidth), (SimMain.mapHeight)];
         double[,] rangeLife = new double[(SimMain.mapWidth), (SimMain.mapHeight)];
@@ -78,7 +79,6 @@ public class EcoSysField
                     photoSythLife[x, y] = 0;
                 }
             }
-
         for (int x = 0; x < (SimMain.mapWidth); x++)
         {
             for (int y = 0; y < (SimMain.mapHeight); y++)
@@ -117,6 +117,7 @@ public class EcoSysField
                     }
                     if (count != 0 && replicationTotal != 0 && tempEnergy != 0)
                     {
+                        totalCount++;
                         tempSpeed = ((tempSpeed / count) / replicationTotal) / tempEnergy;
                         tempRange = ((tempRange / count) / replicationTotal) / tempEnergy;
                         tempReplicationFactor = ((tempReplicationFactor / count) / replicationTotal) / tempEnergy;
@@ -140,7 +141,7 @@ public class EcoSysField
                                 {
                                     if ((x + i >= 0) && (y + j >= 0) && (x + i < SimMain.mapWidth) && (y + j < SimMain.mapHeight))
                                     {
-                                        if (Math.Abs(speedLife[x + i, y + j] - tempSpeed) + Math.Abs(rangeLife[x + i, y + j] - tempRange) + Math.Abs(repFactLife[x + i, y + j] - tempReplicationFactor) <= 4.3)
+                                        if (Math.Abs(speedLife[x + i, y + j] - tempSpeed) + Math.Abs(rangeLife[x + i, y + j] - tempRange) + Math.Abs(repFactLife[x + i, y + j] - tempReplicationFactor) <= 40.3)
                                         {
                                             count += convArr[i + 2, j + 2];
                                             tempEnergy += energy[x + i, y + j];
@@ -154,6 +155,24 @@ public class EcoSysField
                                     }
                                 }
                             }
+                            if (replicationEnergy * newReplicationFactor > energy[x, y] + 0.1f)// / (((newReplicationFactor / count) / replicationTotal) / tempEnergy))
+                            {
+                                // if (energy[x, y] == 0)
+                                // {
+                                //     Console.WriteLine("tried:" + replicationEnergy);
+                                // }
+                                //Console.WriteLine("speed:" + newSpeed + ", range:" + newRange + ", relicationFactor:" + newReplicationFactor + ", count" + count);
+                                tempLife[x, y] = new Life(Life.SpeciesType.PLANT, (int)(((newSpeed / (double)count) / replicationTotal) / tempEnergy + 0.5f), ((newRange / count) / replicationTotal) / tempEnergy, ((newReplicationFactor / count) / replicationTotal) / tempEnergy, replicationEnergy, ((newPhotosynth / count) / replicationTotal) / tempEnergy);
+                            }
+                            else
+                            {
+                                partialCount++;
+                                if (energy[x, y] == 0)
+                                {
+                                    Console.WriteLine(replicationEnergy + " * " + newReplicationFactor + " > " + (energy[x, y] + 0.1f));
+                                }
+                                tempLife[x, y] = fieldLife[x, y];
+                            }
                         }
                         catch (Exception e)
                         {
@@ -164,19 +183,6 @@ public class EcoSysField
                         if (fieldLife[x, y] != null && ((fieldLife[x, y].energy <= 0) || (int)(fieldLife[x, y].energy * rand.NextDouble() * 30) == 0))
                         {
                             fieldLife[x, y] = null;
-                        }
-                        if (replicationEnergy * newReplicationFactor > energy[x, y] + 1f / (((newReplicationFactor / count) / replicationTotal) / tempEnergy))
-                        {
-                            // if (energy[x, y] == 0)
-                            // {
-                            //     Console.WriteLine("tried:" + replicationEnergy);
-                            // }
-                            //Console.WriteLine("speed:" + newSpeed + ", range:" + newRange + ", relicationFactor:" + newReplicationFactor + ", count" + count);
-                            tempLife[x, y] = new Life(Life.SpeciesType.PLANT, (int)(((newSpeed / (double)count) / replicationTotal) / tempEnergy + 0.5f), ((newRange / count) / replicationTotal) / tempEnergy, ((newReplicationFactor / count) / replicationTotal) / tempEnergy, replicationEnergy, ((newPhotosynth / count) / replicationTotal) / tempEnergy);
-                        }
-                        else
-                        {
-                            tempLife[x, y] = fieldLife[x, y];
                         }
 
                     }
@@ -191,7 +197,10 @@ public class EcoSysField
                 }
             }
         }
-        Console.WriteLine(totalCount);
+        if (totalCount != 0)
+        {
+            Console.WriteLine("totalCount:" + totalCount + ", partialCount:" + partialCount);
+        }
         fieldLife = tempLife;
     }
 
