@@ -3,21 +3,23 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Net;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.Serialization;
 using System.Xml.Schema;
 using SimplexNoise;
 public class EcoSysField
 {
     private static Random rand = new Random();
+    public double speciationTolerance = 4;
     private static double[,] convArr = {{0f, 0.02f, 0.03f, 0.02f, 0f},
-                                        {0.02, 0.1, 0.15,  0.1, 0.02},
-                                        {0.03, 0.15, 0.3,  0.15, 0.03},
-                                        {0.02, 0.1, 0.15,  0.1, 0.02},
+                                        {0.02f, 0.1f, 0.15f,  0.1f, 0.02f},
+                                        {0.03f, 0.15f, 0.5f,  0.15f, 0.03f},
+                                        {0.02f, 0.1f, 0.15f,  0.1f, 0.02f},
                                         {0f, 0.02f, 0.03f, 0.02f, 0f}};
     private static double[,] replicationArr =  {{0f, 0.02f, 0.03f, 0.02f, 0f},
-                                                {0.02, 0.2, 0.35,  0.2, 0.02},
-                                                {0.03, 0.35, 0.0,  0.35, 0.03},
-                                                {0.02, 0.2, 0.35,  0.2, 0.02},
+                                                {0.02, 0.2f, 0.35f,  0.2f, 0.02f},
+                                                {0.03f, 0.35f, 0.0f,  0.35f, 0.03f},
+                                                {0.02f, 0.2f, 0.35f,  0.2f, 0.02f},
                                                 {0f, 0.02f, 0.03f, 0.02f, 0f}};
     private Life[,] fieldLife = new Life[SimMain.mapWidth, SimMain.mapHeight];
     private double[,] fieldLight = new double[SimMain.mapWidth, SimMain.mapHeight];
@@ -79,6 +81,12 @@ public class EcoSysField
                     photoSythLife[x, y] = 0;
                 }
             }
+        double avgSpeed = 0;
+        double avgRepFact = 0;
+        double avgRange = 0;
+        double avgPhytoshynth = 0;
+        double avgEnergy = 0;
+        double orgcount = 0;
         for (int x = 0; x < (SimMain.mapWidth); x++)
         {
             for (int y = 0; y < (SimMain.mapHeight); y++)
@@ -102,10 +110,11 @@ public class EcoSysField
                             {
                                 if (fieldLife[x + i, y + j] != null)
                                 {
-                                    count += convArr[i + 2, j + 2];
-                                    replicationTotal += repFactLife[x + i, y + j];
+                                    //count += convArr[i + 2, j + 2];
+                                    count += convArr[i + 2, j + 2] * repFactLife[x + i, y + j] * energy[x + i, y + j];
+                                    //replicationTotal += repFactLife[x + i, y + j];
                                     activationEnergy += energy[x + i, y + j] * replicationArr[i + 2, j + 2];
-                                    tempEnergy += energy[x + i, y + j];
+                                    // tempEnergy += energy[x + i, y + j];
                                     tempSpeed += convArr[i + 2, j + 2] * speedLife[x + i, y + j] * repFactLife[x + i, y + j] * energy[x + i, y + j];
                                     tempRange += convArr[i + 2, j + 2] * rangeLife[x + i, y + j] * repFactLife[x + i, y + j] * energy[x + i, y + j];
                                     tempReplicationFactor += convArr[i + 2, j + 2] * repFactLife[x + i, y + j] * repFactLife[x + i, y + j] * energy[x + i, y + j];
@@ -115,19 +124,19 @@ public class EcoSysField
                             }
                         }
                     }
-                    if (count != 0 && replicationTotal != 0 && tempEnergy != 0)
+                    if (count != 0)
                     {
                         totalCount++;
-                        tempSpeed = ((tempSpeed / count) / replicationTotal) / tempEnergy;
-                        tempRange = ((tempRange / count) / replicationTotal) / tempEnergy;
-                        tempReplicationFactor = ((tempReplicationFactor / count) / replicationTotal) / tempEnergy;
-                        tempPhotosynth = ((tempPhotosynth / count) / replicationTotal) / tempEnergy;
+                        tempSpeed = (tempSpeed / count);
+                        tempRange = (tempRange / count);
+                        tempReplicationFactor = (tempReplicationFactor / count);
+                        tempPhotosynth = (tempPhotosynth / count);
 
 
 
                         count = 0;
-                        replicationTotal = 0;
-                        tempEnergy = 0;
+                        // replicationTotal = 0;
+                        // tempEnergy = 0;
                         double newSpeed = 0;
                         double newRange = 0;
                         double newReplicationFactor = 0;
@@ -141,9 +150,10 @@ public class EcoSysField
                                 {
                                     if ((x + i >= 0) && (y + j >= 0) && (x + i < SimMain.mapWidth) && (y + j < SimMain.mapHeight))
                                     {
-                                        if (Math.Abs(speedLife[x + i, y + j] - tempSpeed) + Math.Abs(rangeLife[x + i, y + j] - tempRange) + Math.Abs(repFactLife[x + i, y + j] - tempReplicationFactor) <= 40.3)
+                                        if (Math.Abs(speedLife[x + i, y + j] - tempSpeed) + Math.Abs(rangeLife[x + i, y + j] - tempRange) + Math.Abs(repFactLife[x + i, y + j] - tempReplicationFactor) <= speciationTolerance)
                                         {
-                                            count += convArr[i + 2, j + 2];
+                                            // count += convArr[i + 2, j + 2];
+                                            count += convArr[i + 2, j + 2] * repFactLife[x + i, y + j] * energy[x + i, y + j];
                                             tempEnergy += energy[x + i, y + j];
                                             replicationTotal += repFactLife[x + i, y + j];
                                             newPhotosynth += convArr[i + 2, j + 2] * photoSythLife[x + i, y + j] * repFactLife[x + i, y + j] * energy[x + i, y + j];
@@ -155,23 +165,46 @@ public class EcoSysField
                                     }
                                 }
                             }
-                            if (replicationEnergy * newReplicationFactor > energy[x, y] + 0.1f)// / (((newReplicationFactor / count) / replicationTotal) / tempEnergy))
+                            if (SimMain.instance.time == 1)
+                                Console.WriteLine("replicationEnergy:" + replicationEnergy);
+                            if (replicationEnergy * (newReplicationFactor / count) > repFactLife[x, y] / 5 + 0.1 * energy[x, y])// / (((newReplicationFactor / count) / replicationTotal) / tempEnergy))
                             {
                                 // if (energy[x, y] == 0)
                                 // {
                                 //     Console.WriteLine("tried:" + replicationEnergy);
                                 // }
                                 //Console.WriteLine("speed:" + newSpeed + ", range:" + newRange + ", relicationFactor:" + newReplicationFactor + ", count" + count);
-                                tempLife[x, y] = new Life(Life.SpeciesType.PLANT, (int)(((newSpeed / (double)count) / replicationTotal) / tempEnergy + 0.5f), ((newRange / count) / replicationTotal) / tempEnergy, ((newReplicationFactor / count) / replicationTotal) / tempEnergy, replicationEnergy, ((newPhotosynth / count) / replicationTotal) / tempEnergy);
+                                if (replicationEnergy > 20)
+                                {
+                                    replicationEnergy = 20;
+                                }
+                                if (fieldLife[x, y] != null && Math.Abs(speedLife[x, y] - (newSpeed / count)) + Math.Abs(rangeLife[x, y] - (newRange / count)) + Math.Abs(repFactLife[x, y] - (newReplicationFactor / count)) < speciationTolerance)
+                                {
+                                    tempLife[x, y] = new Life(Life.SpeciesType.PLANT, (int)((newSpeed / count) + 0.5f), newRange / count, newReplicationFactor / count, fieldLife[x, y].energy, newPhotosynth / count);
+                                }
+                                else
+                                {
+                                    tempLife[x, y] = new Life(Life.SpeciesType.PLANT, (int)((newSpeed / count) + 0.5f), newRange / count, newReplicationFactor / count, 0, newPhotosynth / count);
+                                }
+
                             }
                             else
                             {
                                 partialCount++;
                                 if (energy[x, y] == 0)
                                 {
-                                    Console.WriteLine(replicationEnergy + " * " + newReplicationFactor + " > " + (energy[x, y] + 0.1f));
+                                    Console.WriteLine(replicationEnergy + " * " + newReplicationFactor / count + " > " + (repFactLife[x, y] / 5));
                                 }
                                 tempLife[x, y] = fieldLife[x, y];
+                            }
+                            if (tempLife[x, y] != null)
+                            {
+                                orgcount++;
+                                avgSpeed += tempLife[x, y].speed;
+                                avgRepFact += tempLife[x, y].replicationFactor;
+                                avgRange += tempLife[x, y].range;
+                                avgPhytoshynth += tempLife[x, y].photosyntheticRate;
+                                avgEnergy += tempLife[x, y].energy;
                             }
                         }
                         catch (Exception e)
@@ -196,12 +229,19 @@ public class EcoSysField
                     Console.WriteLine("Woops:" + e);
                 }
             }
+
         }
         if (totalCount != 0)
         {
             Console.WriteLine("totalCount:" + totalCount + ", partialCount:" + partialCount);
         }
         fieldLife = tempLife;
+        avgSpeed = avgSpeed / orgcount;
+        avgRepFact = avgRepFact / orgcount;
+        avgRange = avgRange / orgcount;
+        avgPhytoshynth = avgPhytoshynth / orgcount;
+        avgEnergy = avgEnergy / orgcount;
+        Console.WriteLine("speed:" + avgSpeed + ", RepFact:" + avgRepFact + ", range:" + avgRange + ", photoSynthRate:" + avgPhytoshynth + ", energy:" + avgEnergy);
     }
 
 
@@ -245,6 +285,7 @@ public class EcoSysField
                 {
                     tempLife[x, y] = new Life(Life.SpeciesType.PLANT);//, (int)(tempSpeed / (double)count + 0.5f), tempRange / count, tempReplicationFactor / count, activationEnergy);
                 }
+
             }
         }
         fieldLife = tempLife;
@@ -252,73 +293,80 @@ public class EcoSysField
 
     public void StepLight(int time)
     {
-        //Console.WriteLine((int)(fieldLife[0, 0].energy * fieldLife[0, 0].speed * 25));
-        //Console.WriteLine(255 + ", " + (int)(fieldLife[0, 0].energy * fieldLife[0, 0].speed * 25) + ", " + (int)(fieldLife[0, 0].energy * fieldLife[0, 0].range * 62) + ", " + (int)(fieldLife[0, 0].energy * fieldLife[0, 0].replicationFactor * 255));
+        try
+        {//Console.WriteLine((int)(fieldLife[0, 0].energy * fieldLife[0, 0].speed * 25));
+         //Console.WriteLine(255 + ", " + (int)(fieldLife[0, 0].energy * fieldLife[0, 0].speed * 25) + ", " + (int)(fieldLife[0, 0].energy * fieldLife[0, 0].range * 62) + ", " + (int)(fieldLife[0, 0].energy * fieldLife[0, 0].replicationFactor * 255));
 
-        Brush cellColor;
-        for (int x = 0; x < (SimMain.mapWidth); x++)
-        {
-            for (int y = 0; y < (SimMain.mapHeight); y++)
+            Brush cellColor;
+            for (int x = 0; x < (SimMain.mapWidth); x++)
             {
-                if (fieldLife[x, y] != null)
-                {
-                    cellColor = Brushes.White;
-                }
-                //cellColor = new SolidBrush(Color.FromArgb(255, (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * 25), (int)(fieldLife[x, y].energy * fieldLife[x, y].range * 62), (int)(fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 255)));
-                else
-                    cellColor = Brushes.Black;
-
-                float tempLightVal = 128f - Math.Abs(Noise.CalcPixel3D(x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (time * 3) / 10, 0.005f) - 128);
-                fieldLight[x, y] = tempLightVal;
-                if (tempLightVal >= 100f)
+                for (int y = 0; y < (SimMain.mapHeight); y++)
                 {
                     if (fieldLife[x, y] != null)
                     {
-                        try
+                        cellColor = Brushes.White;
+                    }
+                    //cellColor = new SolidBrush(Color.FromArgb(255, (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * 25), (int)(fieldLife[x, y].energy * fieldLife[x, y].range * 62), (int)(fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 255)));
+                    else
+                        cellColor = Brushes.Black;
+
+                    float tempLightVal = 128f - Math.Abs(Noise.CalcPixel3D(x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (time * 3) / 10, 0.005f) - 128);
+                    fieldLight[x, y] = tempLightVal;
+                    if (tempLightVal >= 100f)
+                    {
+                        if (fieldLife[x, y] != null)
                         {
-                            //Console.WriteLine("color good:" + (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * (25 / 5f)) + ", " + (((int)(fieldLife[x, y].energy * fieldLife[x, y].range * (62 / 5f)) + 127) / 2) + ", " + (int)(fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 25));
-                            cellColor = new SolidBrush(Color.FromArgb(255, (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * (25 / 20f)), ((int)(fieldLife[x, y].energy * fieldLife[x, y].range * (62 / 20f)) + 127) / 2, (int)((fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 25) / 10)));
-                            Graphics.FromImage(SimMain.lightbmp).FillRectangle(cellColor, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
+                            try
+                            {
+                                //Console.WriteLine("color good:" + (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * (25 / 5f)) + ", " + (((int)(fieldLife[x, y].energy * fieldLife[x, y].range * (62 / 5f)) + 127) / 2) + ", " + (int)(fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 25));
+                                cellColor = new SolidBrush(Color.FromArgb(255, (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * (25 / 20f)), ((int)(fieldLife[x, y].energy * fieldLife[x, y].range * (62 / 20f)) + 127) / 2, (int)((fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 25) / 10)));
+                                Graphics.FromImage(SimMain.lightbmp).FillRectangle(cellColor, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
+                            }
+                            catch
+                            {
+                                Console.WriteLine("color error:" + 255 + ", " + (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * (25 / 20f)) + ", " + (((int)(fieldLife[x, y].energy * fieldLife[x, y].range * (62 / 20f)) + 127) / 2) + ", " + (int)((fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 25) / 10));
+                                Console.WriteLine("color errorV:" + 255 + ", " + fieldLife[x, y].energy + ", " + fieldLife[x, y].speed + ", " + fieldLife[x, y].range * (62 / 20f) + ", " + fieldLife[x, y].replicationFactor * 25 / 10 + ", " + fieldLife[x, y].photosyntheticRate);
+                                Graphics.FromImage(SimMain.lightbmp).FillRectangle(Brushes.Red, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
+                            }
+
                         }
-                        catch
+                        else
                         {
-                            Console.WriteLine("color error:" + 255 + ", " + (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * (25 / 20f)) + ", " + (((int)(fieldLife[x, y].energy * fieldLife[x, y].range * (62 / 20f)) + 127) / 2) + ", " + (int)((fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 25) / 10));
-                            Graphics.FromImage(SimMain.lightbmp).FillRectangle(Brushes.Red, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
+                            //Graphics.FromImage(SimMain.lightbmp).FillRectangle(Brushes.Yellow, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
                         }
 
                     }
                     else
                     {
-                        //Graphics.FromImage(SimMain.lightbmp).FillRectangle(Brushes.Yellow, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
+                        if (fieldLife[x, y] != null)
+                        {
+                            // Graphics.FromImage(SimMain.lightbmp).FillRectangle(Brushes.Blue, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
+                            try
+                            {
+                                cellColor = new SolidBrush(Color.FromArgb(255, (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * (25 / 20f)), (int)(fieldLife[x, y].energy * fieldLife[x, y].range * (62 / 20f)), (int)((fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 25) / 10)));
+                                Graphics.FromImage(SimMain.lightbmp).FillRectangle(cellColor, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
+                            }
+                            catch
+                            {
+                                Console.WriteLine("color error:" + 255 + ", " + (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * (25 / 20f)) + ", " + (int)(fieldLife[x, y].energy * fieldLife[x, y].range * (62 / 20f)) + ", " + (int)((fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 25) / 10));
+                                Console.WriteLine("color errorV:" + 255 + ", " + fieldLife[x, y].energy + ", " + fieldLife[x, y].speed + ", " + fieldLife[x, y].range * (62 / 20f) + ", " + fieldLife[x, y].replicationFactor * 25 / 10 + ", " + fieldLife[x, y].photosyntheticRate);
+                                Graphics.FromImage(SimMain.lightbmp).FillRectangle(Brushes.Red, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
+                            }
+                        }
+                        else
+                        {
+                            //Graphics.FromImage(SimMain.lightbmp).FillRectangle(Brushes.Black, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
+                        }
+                        //SimMain.lightbmp.SetPixel(x, y, Color.Black);
                     }
+
 
                 }
-                else
-                {
-                    if (fieldLife[x, y] != null)
-                    {
-                        // Graphics.FromImage(SimMain.lightbmp).FillRectangle(Brushes.Blue, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
-                        try
-                        {
-                            cellColor = new SolidBrush(Color.FromArgb(255, (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * (25 / 20f)), (int)(fieldLife[x, y].energy * fieldLife[x, y].range * (62 / 20f)), (int)((fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 25) / 10)));
-                            Graphics.FromImage(SimMain.lightbmp).FillRectangle(cellColor, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
-                        }
-                        catch
-                        {
-                            Console.WriteLine("color error:" + 255 + ", " + (int)(fieldLife[x, y].energy * fieldLife[x, y].speed * (25 / 20f)) + ", " + (int)(fieldLife[x, y].energy * fieldLife[x, y].range * (62 / 20f)) + ", " + (int)((fieldLife[x, y].energy * fieldLife[x, y].replicationFactor * 25) / 10));
-                            Console.WriteLine("color errorV:" + 255 + ", " + fieldLife[x, y].energy + ", " + fieldLife[x, y].speed + ", " + fieldLife[x, y].range * (62 / 20f) + ", " + fieldLife[x, y].replicationFactor * 25 / 10);
-                            Graphics.FromImage(SimMain.lightbmp).FillRectangle(Brushes.Red, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
-                        }
-                    }
-                    else
-                    {
-                        //Graphics.FromImage(SimMain.lightbmp).FillRectangle(Brushes.Black, x * (1000 / SimMain.mapWidth), y * (1000 / SimMain.mapHeight), (1000 / SimMain.mapWidth), (1000 / SimMain.mapHeight));
-                    }
-                    //SimMain.lightbmp.SetPixel(x, y, Color.Black);
-                }
-
-
             }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
         }
 
     }

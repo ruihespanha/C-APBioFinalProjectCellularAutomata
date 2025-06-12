@@ -31,7 +31,9 @@ public class Life
 
     public double getReplicationEnergy()
     {
-        return 0.4f * replicationFactor * energy + 0.4f * speed + 0.3f * range + 4 * photosyntheticRate * photosyntheticRate;
+        if (energy > 20)
+            energy = 20;
+        return 0.01f * replicationFactor * energy + 0.4f * speed + 0.3f * range + 4 * photosyntheticRate * photosyntheticRate;
     }
     public double useReplicationEnergy()
     {

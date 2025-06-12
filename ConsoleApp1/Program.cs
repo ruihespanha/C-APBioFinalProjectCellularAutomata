@@ -16,7 +16,7 @@ namespace cellSim
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SimMain());
+            Application.Run(new SimMain(true));
         }
     }
 }
