@@ -33,16 +33,16 @@ public class Life
     {
         if (energy > 20)
             energy = 20;
-        return 0.4f * replicationFactor * energy + 0.4f * (1 / Math.Pow(speed, 2)) + 0.3f * range;
+        return 0.4f * Math.Pow(replicationFactor, 0.7) * Math.Pow(energy, 0.3) * Math.Pow(range, 0.3f) + 0.4f * (1 / Math.Pow(speed, -0.2)) * Math.Pow(range, -1f);
     }
     public double useReplicationEnergy()
     {
-        double tempReplicationEnergy = 0.4f * replicationFactor * energy + 0.4f * (1 / Math.Pow(speed, 2)) + 0.3f * range;
+        double tempReplicationEnergy = 0.4f * replicationFactor * Math.Pow(energy, 0.3) * Math.Pow(range, 0.3f) + 0.4f * (1 / Math.Pow(speed, 0.1)) * Math.Pow(range, -1f);
         this.energy -= tempReplicationEnergy;
         if (energy < 0)
         {
             energy = 0;
-            return tempReplicationEnergy;
+            return 0;
         }
 
         return tempReplicationEnergy;
@@ -64,7 +64,7 @@ public class Life
     }
     public void photosynthisize(double light)
     {
-        energy += (light + photosyntheticRate) / (Math.Pow(photosyntheticRate, 2));
+        energy += (light + photosyntheticRate) / (3 * Math.Pow(photosyntheticRate, 2));
         if (energy > 20)
         {
             energy = 20;

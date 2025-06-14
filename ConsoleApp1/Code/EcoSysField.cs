@@ -69,13 +69,36 @@ public class EcoSysField
             {
                 if (fieldLife[x, y] != null)
                 {
-                    binLife[x, y] = 1;
-                    speedLife[x, y] = fieldLife[x, y].speed;
-                    rangeLife[x, y] = fieldLife[x, y].range;
-                    repFactLife[x, y] = fieldLife[x, y].replicationFactor;
-                    energy[x, y] = fieldLife[x, y].useReplicationEnergy();
-                    fieldLife[x, y].photosynthisize(fieldLight[x, y]);
-                    photoSythLife[x, y] = fieldLife[x, y].photosyntheticRate;
+                    try
+                    {
+                        if (fieldLife[x, y].speed != 0 && SimMain.instance.time % fieldLife[x, y].speed == 0)
+                            energy[x, y] = fieldLife[x, y].useReplicationEnergy();
+                        else
+                            energy[x, y] = fieldLife[x, y].getReplicationEnergy();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                    }
+                    if (fieldLife[x, y].energy < 0)
+                    {
+                        binLife[x, y] = 0;
+                        speedLife[x, y] = 0;
+                        rangeLife[x, y] = 0;
+                        repFactLife[x, y] = 0;
+                        energy[x, y] = 0;
+                        photoSythLife[x, y] = 0;
+                    }
+                    else
+                    {
+                        binLife[x, y] = 1;
+                        speedLife[x, y] = fieldLife[x, y].speed;
+                        rangeLife[x, y] = fieldLife[x, y].range;
+                        repFactLife[x, y] = fieldLife[x, y].replicationFactor;
+                        fieldLife[x, y].photosynthisize(fieldLight[x, y]);
+                        photoSythLife[x, y] = fieldLife[x, y].photosyntheticRate;
+                    }
+
                 }
                 else
                 {
@@ -157,6 +180,9 @@ public class EcoSysField
                         double newReplicationFactor = 0;
                         double replicationEnergy = 0;
                         double newPhotosynth = 0;
+
+                        double averageEnergy = 0;
+                        double replecationTotoal = 0;
                         try
                         {
                             for (int i = -2; i < 3; i++)
@@ -176,6 +202,7 @@ public class EcoSysField
                                             newRange += convArr[i + 2, j + 2] * rangeLife[x + i, y + j] * repFactLife[x + i, y + j] * energy[x + i, y + j];
                                             newReplicationFactor += convArr[i + 2, j + 2] * repFactLife[x + i, y + j] * repFactLife[x + i, y + j] * energy[x + i, y + j];
                                             replicationEnergy += replicationArr[i + 2, j + 2] * energy[x + i, y + j];
+                                            averageEnergy += replicationArr[i + 2, j + 2] * energy[x + i, y + j];
                                         }
                                     }
                                 }
@@ -185,6 +212,7 @@ public class EcoSysField
                             newReplicationFactor = newReplicationFactor / count;
                             replicationEnergy = replicationEnergy / count;
                             newPhotosynth = newPhotosynth / count;
+                            averageEnergy = averageEnergy / replecationTotoal;
                             double adjasent = 0;
                             for (int i = -2; i < 3; i++)
                                 for (int j = -2; j < 3; j++)
@@ -209,7 +237,23 @@ public class EcoSysField
                                 else if (adjasent * replicationEnergy * newReplicationFactor > energy[x, y] + 0.1 * rand.NextDouble())
                                 {
                                     hit1++;
-                                    tempLife[x, y] = new Life(Life.SpeciesType.PLANT, (int)(newSpeed + 0.5f) + (int)(rand.NextDouble() * (1 + 0.1 * ambiantRadiation)), newRange * (4 + Math.Pow(rand.NextDouble(), 2) * 2 * ambiantRadiation) / 5, newReplicationFactor * (4 + Math.Pow(rand.NextDouble(), 2) * 2 * ambiantRadiation) / 5, energy[x, y] * (4 + Math.Pow(rand.NextDouble(), 2) * 2 * ambiantRadiation) / 5, newPhotosynth * (4 + Math.Pow(rand.NextDouble(), 2) * 2 * ambiantRadiation) / 5);
+                                    double startingEnergy = energy[x, y] + averageEnergy * (4 + Math.Pow(rand.NextDouble(), 2) * 2 * ambiantRadiation) / 5;
+                                    if (startingEnergy > 0)
+                                    {
+                                        tempLife[x, y] = new Life(
+                                            Life.SpeciesType.PLANT,
+                                            (int)(newSpeed + 0.5f) + (int)(rand.NextDouble() * (1 + 0.1 * ambiantRadiation)),
+                                            newRange * (4 + Math.Pow(rand.NextDouble(), 2) * 2 * ambiantRadiation) / 5,
+                                            newReplicationFactor * (4 + Math.Pow(rand.NextDouble(), 2) * 2 * ambiantRadiation) / 5,
+                                            energy[x, y] + energy[x, y] * (4 + Math.Pow(rand.NextDouble(), 2) * 2 * ambiantRadiation) / 5,
+                                            newPhotosynth * (4 + Math.Pow(rand.NextDouble(), 2) * 2 * ambiantRadiation) / 5
+                                            );
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("startingEnergy:" + startingEnergy);
+                                        tempLife[x, y] = fieldLife[x, y];
+                                    }
                                 }
                                 else if (adjasent * 2 > repFactLife[x, y])
                                 {

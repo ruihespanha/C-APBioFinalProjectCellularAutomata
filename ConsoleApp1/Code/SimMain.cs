@@ -22,8 +22,8 @@ class SimMain : Form
     public static SimMain instance = new SimMain(false);
     private static System.Timers.Timer periodicTimer;
     private EcoSysField field;
-    public static int mapHeight = 50;
-    public static int mapWidth = 50;
+    public static int mapHeight = 100;
+    public static int mapWidth = 100;
     public static Bitmap bmp = new Bitmap(1000, 1000);
     public static Bitmap lightbmp = new Bitmap(1000, 1000);
 
